@@ -3,7 +3,7 @@
 #
 #  pntranscoder.py
 #
-#  Copyright 2013 Marcel Hnilka <marcel@gmail.com>
+#  Copyright 2013 Marcel Hnilka <mhnilka@gmail.com>
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -683,6 +683,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Batch transcoding of video "
                                                  "files")
     parser.add_argument("input_folder", help="Input folder")
+    parser.add_argument("-s", "--suffix", help="Suffix", type=str)
     parser.add_argument("-n", "--nocrop", help="Disable crop detection",
                         action="store_true")
     parser.add_argument("-f", "--filter", action="append", type=str,
@@ -705,7 +706,9 @@ if __name__ == '__main__':
                         help="Downmix audio to stereo")
     args = parser.parse_args()
 
-    if args.phone:
+    if args.suffix:
+        suffixName = args.suffix
+    elif args.phone:
         suffixName = args.phone
 
     if args.nocrop:

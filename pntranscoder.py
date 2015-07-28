@@ -3,7 +3,7 @@
 #
 #  pntranscoder.py
 #
-#  Copyright 2013 Marcel Hnilka <mhnilka@gmail.com>
+#  Copyright 2013 Marcel Hnilka <marcel@lnmhnilka>
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -205,7 +205,8 @@ def detectLetterbox(video, dlzka):
     d_duration = "00:00:20"
 
     # cropDetect1 = "cropdetect=31:2:500"
-    cropDetect1 = "cropdetect=31:16:500"
+    # cropDetect1 = "cropdetect=31:16:500"
+    cropDetect1 = "cropdetect"
     cropDetect2 = "cropdetect"
 
     inParms = ["-ss", d_start, "-t", d_duration]
@@ -413,14 +414,21 @@ def videoConversion(inFile, sourceType, crop, filters, codec,
     videoCodecVP9 = ["-c:v", "libvpx-vp9"]
     videoCodecPreset = ["-preset", hPreset]
 
-    if sourceType:
-        videoCodecTune = ["-tune", sourceType[0]]
-    else:
-        videoCodecTune = ["-tune", "film"]
-
     x264opts = ["-x264opts", "fast_pskip=0", "-aq-mode", "2"]
     # x264opts = []
     x265opts = ["-x265-params", "crf="+str(crf + 5)]
+
+    if sourceType:
+        if sourceType[0] == "none":
+            videoCodecTune = []
+            x264opts = ["-x264opts", "fast_pskip=0"]
+        elif sourceType[0] == "animation":
+            videoCodecTune = ["-tune", sourceType[0]]
+            x264opts = ["-x264opts", "fast_pskip=0"]
+        else:
+            videoCodecTune = ["-tune", sourceType[0]]
+    else:
+        videoCodecTune = ["-tune", "film"]
 
     if filters:
         for (k, v) in availFilters.items():
@@ -690,7 +698,8 @@ if __name__ == '__main__':
                                  "slower", "veryslow", "placebo"],
                         help="Override default x264 preset value")
     parser.add_argument("-t", "--tune", action="append", type=str,
-                        choices=["film", "animation", "grain", "stillimage"],
+                        choices=["film", "animation", "grain", "stillimage",
+                                 "none"],
                         help="Override default x264 tune option")
     parser.add_argument("-d", "--downmix", action="store_true",
                         help="Downmix audio to stereo")
